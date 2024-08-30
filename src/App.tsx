@@ -1,18 +1,40 @@
-import { Component } from 'react'
+import { Component, createRef, MutableRefObject } from 'react'
 import { ApiClient } from '#api'
 import { ITodo } from '#todo'
 
-const name = 'John'
+interface IProps {
+	name?: string
+}
 
-class App extends Component {
+const defaultProps: IProps = {
+	name: 'Nemo'
+}
+
+class App extends Component<IProps> {
+	static defaultProps = defaultProps
+
+	private _isRequestSent: MutableRefObject<boolean>
+
+	constructor(props: IProps) {
+		super(props)
+
+		this._isRequestSent = createRef<boolean>()
+	}
+
 	componentDidMount() {
-		ApiClient
-			.get<ITodo[]>('https://jsonplaceholder.typicode.com/todos')
-			.then(data => console.debug(data))
-			.catch(err => console.debug(err))
+		if (!this._isRequestSent.current) {
+			ApiClient
+				.get<ITodo[]>('https://jsonplaceholder.typicode.com/todos')
+				.then(data => console.debug(data))
+				.catch(err => console.debug(err))
+
+			this._isRequestSent.current = true
+		}
 	}
 
 	render() {
+		const { name } = this.props
+
 		return (
 			<div className='app'>Hello, { name }</div>
 		)
