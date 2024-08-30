@@ -1,21 +1,12 @@
 import { Component, createRef, MutableRefObject } from 'react'
-import { ApiClient } from '#api'
-import { ITodo } from '#todo'
+import { TodoList, todoStore } from '#todo'
+import { observer } from 'mobx-react'
 
-interface IProps {
-	name?: string
-}
-
-const defaultProps: IProps = {
-	name: 'Nemo'
-}
-
-class App extends Component<IProps> {
-	static defaultProps = defaultProps
-
+@observer
+class App extends Component {
 	private _isRequestSent: MutableRefObject<boolean>
 
-	constructor(props: IProps) {
+	constructor(props: NonNullable<unknown>) {
 		super(props)
 
 		this._isRequestSent = createRef<boolean>()
@@ -23,20 +14,29 @@ class App extends Component<IProps> {
 
 	componentDidMount() {
 		if (!this._isRequestSent.current) {
-			ApiClient
-				.get<ITodo[]>('https://jsonplaceholder.typicode.com/todos')
-				.then(data => console.debug(data))
-				.catch(err => console.debug(err))
+			todoStore.getTodos()
 
 			this._isRequestSent.current = true
 		}
 	}
 
 	render() {
-		const { name } = this.props
+		const {
+			todos,
+			isLoading,
+			error
+		} = todoStore
 
 		return (
-			<div className='app'>Hello, { name }</div>
+			<>
+				{ isLoading ? (
+					<div>Loading...</div>
+				) : error ? (
+					<div>{ error }</div>
+				) : todos.size ? (
+					<TodoList todos={ todos } />
+				) : <div>No data</div> }
+			</>
 		)
 	}
 }
