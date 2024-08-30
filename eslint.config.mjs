@@ -31,6 +31,7 @@ export default TSLint.config({
 	rules: {
 		...ESLint.configs.recommended.rules,
 		...react.configs.flat.recommended.rules,
+		"no-undef": [ 0 ],
 		"max-len": [ "warn", { "code": 120 } ],
 		"no-unused-vars": [ "error", {
 			"args": "none",
