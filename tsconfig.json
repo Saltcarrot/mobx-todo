@@ -14,6 +14,7 @@
       "#": ["./"],
       "#models": ["./shared/models"],
       "#api": ["./shared/api"],
+      "#ui": ["./shared/ui"],
       "#todo": ["./entities/todo"]
     }
   },

@@ -1,35 +1,46 @@
 import { EMethods, IApiRequestOptions } from '../models'
 
 export class ApiClient {
-	static get<Res>(url: string) {
-		return this.makeRequest<Res>(url)
+	static get<Res>(url: string, options?: Omit<IApiRequestOptions, 'method' | 'body'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.GET })
 	}
 
-	static post<Res>(url: string, body: BodyInit) {
-		return this.makeRequest<Res>(url, { method: EMethods.POST, body })
+	static post<Res>(url: string, options: Omit<IApiRequestOptions, 'method'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.POST })
 	}
 
-	static put<Res>(url: string, body: BodyInit) {
-		return this.makeRequest<Res>(url, { method: EMethods.PUT, body })
+	static put<Res>(url: string, options: Omit<IApiRequestOptions, 'method'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.PUT })
 	}
 
-	static patch<Res>(url: string, body: BodyInit) {
-		return this.makeRequest<Res>(url, { method: EMethods.PATCH, body })
+	static patch<Res>(url: string, options: Omit<IApiRequestOptions, 'method'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.PATCH })
 	}
 
-	static update<Res>(url: string, body: BodyInit) {
-		return this.makeRequest<Res>(url, { method: EMethods.UPDATE, body })
+	static update<Res>(url: string, options: Omit<IApiRequestOptions, 'method'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.UPDATE })
 	}
 
-	static delete<Res>(url: string, body: BodyInit) {
-		return this.makeRequest<Res>(url, { method: EMethods.DELETE, body })
+	static delete<Res>(url: string, options?: Omit<IApiRequestOptions, 'method'>) {
+		return this.makeRequest<Res>(url, { ...options, method: EMethods.DELETE })
 	}
 
 	private static makeRequest<Res>(
 		url: string,
-		options: IApiRequestOptions = { method: 'GET' as EMethods }
+		options: IApiRequestOptions = { method: EMethods.GET, body: {} }
 	) {
-		return fetch(url, options).then(resp => this.handleResponse<Res>(resp))
+		switch (options.method) {
+			case EMethods.GET: {
+				const { body: _, ...rest } = options
+
+				return fetch(url, rest)
+					.then(resp => this.handleResponse<Res>(resp))
+			}
+			default: return fetch(url, {
+				...options,
+				body: JSON.stringify(options.body)
+			}).then(resp => this.handleResponse<Res>(resp))
+		}
 	}
 
 	private static handleResponse<Res>(response: Response) {

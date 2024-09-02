@@ -1,7 +1,8 @@
 import { IEntity } from '#models'
 
 export interface ITodo extends IEntity {
-	userId: number
 	title: string
 	completed: boolean
 }
+
+export type TAddTodoRequest = Pick<ITodo, 'title'>

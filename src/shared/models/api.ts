@@ -13,6 +13,7 @@ export enum EMethods {
 	DELETE = 'DELETE'
 }
 
-export interface IApiRequestOptions extends RequestInit {
+export interface IApiRequestOptions extends Omit<RequestInit, 'body'>{
 	method?: EMethods
+	body?: object
 }
